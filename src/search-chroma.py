@@ -1,17 +1,15 @@
-import redis
 import chromadb
 import json
 import numpy as np
 # from sentence_transformers import SentenceTransformer
 import ollama
-from redis.commands.search.query import Query
-from redis.commands.search.field import VectorField, TextField
 
 
 # Initialize models
 # embedding_model = SentenceTransformer("all-MiniLM-L6-v2")
-redis_client = redis.StrictRedis(host="localhost", port=6380, decode_responses=True)
 
+chroma_client = chromadb.PersistentClient(path="./chroma_db")
+collection = chroma_client.get_or_create_collection(name="embedding_collection")
 
 VECTOR_DIM = 768
 INDEX_NAME = "embedding_index"
@@ -28,14 +26,39 @@ def get_embedding(text: str, model: str = "nomic-embed-text") -> list:
     response = ollama.embeddings(model=model, prompt=text)
     return response["embedding"]
 
+def store_embedding(file, page, chunk, text):
+    """Store an embedding in ChromaDB."""
+    embedding = get_embedding(text)
+    doc_id = f"{file}_page_{page}_chunk_{chunk}"
+
+    collection.add(
+        ids=[doc_id],
+        embeddings=[embedding],
+        metadatas=[{"file": file, "page": page, "chunk": chunk}])
+
 
 def search_embeddings(query, top_k=3):
 
     query_embedding = get_embedding(query)
 
+    results = collection.query(query_embeddings=[query_embedding], n_results=top_k)
+
     # Convert embedding to bytes for Redis search
     query_vector = np.array(query_embedding, dtype=np.float32).tobytes()
 
+
+    top_results = [
+        {
+            "file": metadata["file"],
+            "page": metadata["page"],
+            "chunk": metadata["chunk"],
+            "similarity": score
+        }
+        for metadata, score in zip(results["metadatas"][0], results["distances"][0])
+    ]
+
+    return top_results
+"""
     try:
         # Construct the vector similarity search query
         # Use a more standard RediSearch vector search syntax
@@ -75,7 +98,7 @@ def search_embeddings(query, top_k=3):
     except Exception as e:
         print(f"Search error: {e}")
         return []
-
+"""
 
 def generate_rag_response(query, context_results):
 
