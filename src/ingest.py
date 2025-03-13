@@ -130,7 +130,7 @@ def main():
     clear_redis_store()
     create_hnsw_index()
 
-    process_pdfs("/Users/haleymartin/desktop/DS 4300/DS4300-Practical-02/notes/")
+    process_pdfs("../notes/")
     print("\n---Done processing PDFs---\n")
     query_redis("What is the capital of France?")
 
