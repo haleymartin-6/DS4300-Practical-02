@@ -98,6 +98,7 @@ ollama pull mistral
 ```
 ## Running the model
 
-1. Make sure to run the ingest.py script for whichever database of your choosing. This will populate the chosen vector database with what information you want to give it from your notes.
-2. Run the script search.py for the corresponding database you ran the ingest.py for. You will then be prompted to enter your questions and receive responses based on the indexed documents :)
+1. Ensure that you have both the Docker container running for the database you would like to run and Ollama running.
+2. Make sure to run the ingest.py script for whichever database of your choosing. This will populate the chosen vector database with what information you want to give it from your notes.
+3. Run the script search.py for the corresponding database you ran the ingest.py for. You will then be prompted to enter your questions and receive responses based on the indexed documents :)
 
