@@ -98,5 +98,6 @@ ollama pull mistral
 ```
 ## Running the model
 
-Run the script search.py then enter your questions at the prompt to receive responses based on the indexed documents :)
+1. Make sure to run the ingest.py script for whichever database of your choosing. This will populate the chosen vector database with what information you want to give it from your notes.
+2. Run the script search.py for the corresponding database you ran the ingest.py for. You will then be prompted to enter your questions and receive responses based on the indexed documents :)
 
